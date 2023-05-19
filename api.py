@@ -140,6 +140,19 @@ async def list_docs(
         return ListDocsResponse(data=all_doc_ids)
 
 
+async def list_kbs():
+    if not os.path.exists(VS_ROOT_PATH):
+        all_doc_ids = []
+    else:
+        all_doc_ids = [
+            folder
+            for folder in os.listdir(VS_ROOT_PATH)
+            if os.path.isdir(os.path.join(VS_ROOT_PATH, folder))
+        ]
+
+    return ListDocsResponse(data=all_doc_ids)
+
+
 async def delete_docs(
         knowledge_base_id: str = Form(...,
                                       description="Knowledge Base Name(注意此方法仅删除上传的文件并不会删除知识库(FAISS)内数据)",
@@ -263,7 +276,7 @@ def main():
     app.websocket("/chat-docs/stream-chat/{knowledge_base_id}")(stream_chat)
     app.post("/chat-docs/chat", response_model=ChatMessage)(chat)
     app.post("/chat-docs/upload", response_model=BaseResponse)(upload_file)
-    app.get("/chat-docs/list", response_model=ListDocsResponse)(list_docs)
+    app.get("/chat-docs/list", response_model=ListDocsResponse)(list_kbs)
     app.delete("/chat-docs/delete", response_model=BaseResponse)(delete_docs)
     app.get("/", response_model=BaseResponse)(document)
 
